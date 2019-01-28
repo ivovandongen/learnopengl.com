@@ -1,1 +1,3 @@
+add_subdirectory(common)
 add_subdirectory(lesson01_creating_a_window)
+add_subdirectory(lesson02_hello_triangle)
