@@ -1,3 +1,6 @@
 add_subdirectory(common)
-add_subdirectory(lesson01_creating_a_window)
-add_subdirectory(lesson02_hello_triangle)
+
+file(GLOB lessons "${CMAKE_CURRENT_SOURCE_DIR}/lesson*")
+foreach(lesson ${lessons})
+    add_subdirectory(${lesson})
+endforeach()

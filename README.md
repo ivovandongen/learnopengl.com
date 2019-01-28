@@ -6,3 +6,5 @@
     - [Hello-Window](https://learnopengl.com/Getting-started/Hello-Window)
 - [Lesson2](src/lesson02_hello_triangle)
     - [Hello-Triangle](https://learnopengl.com/Getting-started/Hello-Triangle)
+- [Lesson3](src/lesson03_shaders)
+    - [Shaders](https://learnopengl.com/Getting-started/Shaders)
