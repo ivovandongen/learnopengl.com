@@ -11,10 +11,12 @@ public:
 
     ~Program();
 
+    GLuint id();
+
     void bind();
 
     void unbind();
 
 private:
-    GLuint id;
+    GLuint _id;
 };

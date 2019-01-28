@@ -34,25 +34,29 @@ GLuint loadShader(GLuint program, const std::string &shaderSource, GLuint type) 
 } // namespace
 
 Program::Program(const std::string &vert, const std::string &frag) {
-    id = glCreateProgram();
-    auto vertexShader = loadShader(id, vert, GL_VERTEX_SHADER);
-    auto fragmentShader = loadShader(id, frag, GL_FRAGMENT_SHADER);
+    _id = glCreateProgram();
+    auto vertexShader = loadShader(_id, vert, GL_VERTEX_SHADER);
+    auto fragmentShader = loadShader(_id, frag, GL_FRAGMENT_SHADER);
 
-    glLinkProgram(id);
-    glValidateProgram(id);
+    glLinkProgram(_id);
+    glValidateProgram(_id);
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 }
 
 Program::~Program() {
-    glDeleteProgram(id);
+    glDeleteProgram(_id);
 }
 
 void Program::bind() {
-    glUseProgram(id);
+    glUseProgram(_id);
 }
 
 void Program::unbind() {
     glUseProgram(0);
+}
+
+GLuint Program::id() {
+    return _id;
 }
 
