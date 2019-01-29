@@ -8,3 +8,5 @@
     - [Hello-Triangle](https://learnopengl.com/Getting-started/Hello-Triangle)
 - [Lesson3](src/lesson03_shaders)
     - [Shaders](https://learnopengl.com/Getting-started/Shaders)
+- [Lesson4](src/lesson04_textures)
+    - [Textures](https://learnopengl.com/Getting-started/Textures)
