@@ -156,10 +156,6 @@ int main() {
     program.setUniform("texture1", 0);
     program.setUniform("texture2", 1);
 
-    // Model
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
     // View
     glm::mat4 view = glm::mat4(1.0f);
     // note that we're translating the scene in the reverse direction of where we want to move
@@ -169,7 +165,6 @@ int main() {
     glm::mat4 projection;
     projection = glm::perspective(glm::radians(45.0f), (float) width / (float) height, 0.1f, 100.0f);
 
-    program.setUniform("model", model);
     program.setUniform("view", view);
     program.setUniform("projection", projection);
 
@@ -185,6 +180,11 @@ int main() {
         glfwPollEvents();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Update the model matrix
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::rotate(model, (float) glfwGetTime() * glm::radians(50.f), glm::vec3(0.5f, 1.0f, 0.0f));
+        program.setUniform("model", model);
 
         // Draw the cube
         glDrawArrays(GL_TRIANGLES, 0, 36);
