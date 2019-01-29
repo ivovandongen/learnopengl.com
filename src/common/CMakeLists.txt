@@ -1,4 +1,5 @@
 git_include(glfw)
+git_include(glm)
 git_include(stb)
 include(${CMAKE_SOURCE_DIR}/deps/glad.cmake)
 
@@ -15,6 +16,7 @@ add_library(common STATIC
 target_link_libraries(common PUBLIC
         glad
         stb
+        glm
         )
 
 target_include_directories(common PUBLIC
