@@ -14,3 +14,5 @@
     - [Transformations](https://learnopengl.com/Getting-started/Transformations)
 - [Lesson6](src/lesson06_coordinate_systems)
     - [Coordinate-Systems](https://learnopengl.com/Getting-started/Coordinate-Systems)
+- [Lesson7](src/lesson07_camera)
+    - [Camera](https://learnopengl.com/Getting-started/Camera)
