@@ -168,6 +168,20 @@ int main() {
     program.setUniform("view", view);
     program.setUniform("projection", projection);
 
+    // Cubes
+    glm::vec3 cubePositions[] = {
+            glm::vec3( 0.0f,  0.0f,  0.0f),
+            glm::vec3( 2.0f,  5.0f, -15.0f),
+            glm::vec3(-1.5f, -2.2f, -2.5f),
+            glm::vec3(-3.8f, -2.0f, -12.3f),
+            glm::vec3( 2.4f, -0.4f, -3.5f),
+            glm::vec3(-1.7f,  3.0f, -7.5f),
+            glm::vec3( 1.3f, -2.0f, -2.5f),
+            glm::vec3( 1.5f,  2.0f, -2.5f),
+            glm::vec3( 1.5f,  0.2f, -1.5f),
+            glm::vec3(-1.3f,  1.0f, -1.5f)
+    };
+
     while (!glfwWindowShouldClose(window)) {
 
         int error;
@@ -181,13 +195,16 @@ int main() {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Update the model matrix
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::rotate(model, (float) glfwGetTime() * glm::radians(50.f), glm::vec3(0.5f, 1.0f, 0.0f));
-        program.setUniform("model", model);
+        for (unsigned int i = 0; i < 10; i++) {
+            // Update the model matrix
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            model = glm::rotate(model, (float) glfwGetTime() * (i + 1) * glm::radians(20.f), glm::vec3(1.0f, 0.3f, 0.5f));
+            program.setUniform("model", model);
 
-        // Draw the cube
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+            // Draw the cube
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         glfwSwapBuffers(window);
     }
