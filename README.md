@@ -12,3 +12,5 @@
     - [Textures](https://learnopengl.com/Getting-started/Textures)
 - [Lesson5](src/lesson05_transformations)
     - [Transformations](https://learnopengl.com/Getting-started/Transformations)
+- [Lesson6](src/lesson06_coordinate_systems)
+    - [Coordinate-Systems](https://learnopengl.com/Getting-started/Coordinate-Systems)
