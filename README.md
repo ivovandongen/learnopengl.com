@@ -23,3 +23,6 @@
 
 - [Lesson8](src/lesson08_colors)
     - [Colors](https://learnopengl.com/Lighting/Colors)
+- [Lesson9](src/lesson09_basic_lighting)
+    - [Basic-Lighting](https://learnopengl.com/Lighting/Basic-Lighting)
+    
