@@ -4,6 +4,8 @@ git_include(stb)
 include(${CMAKE_SOURCE_DIR}/deps/glad.cmake)
 
 add_library(common STATIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/camera.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/camera.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/file.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/image.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/image.hpp
