@@ -1,6 +1,8 @@
 # [LearnOpenGL](https://learnopengl.com/Introduction)
 
 
+## Getting started
+
 - [Lesson1](src/lesson01_creating_a_window)
     - [Creating-a-window](https://learnopengl.com/Getting-started/Creating-a-window)
     - [Hello-Window](https://learnopengl.com/Getting-started/Hello-Window)
@@ -16,3 +18,8 @@
     - [Coordinate-Systems](https://learnopengl.com/Getting-started/Coordinate-Systems)
 - [Lesson7](src/lesson07_camera)
     - [Camera](https://learnopengl.com/Getting-started/Camera)
+    
+# Lighting
+
+- [Lesson8](src/lesson08_colors)
+    - [Colors](https://learnopengl.com/Lighting/Colors)
