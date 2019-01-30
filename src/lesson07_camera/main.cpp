@@ -2,6 +2,7 @@
 #include <image.hpp>
 #include <program.hpp>
 #include <texture.hpp>
+#include <camera.hpp>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -18,76 +19,47 @@ float deltaTime = 0.0f; // Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
 
 // Camera
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+Camera camera{glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f)};
 
 // Mouse
 bool firstMouse = true;
-float lastX = width / 2.0;
-float lastY = height / 2.0;
-
-// Yaw/pitch/fov
-float yaw = -90.0f;    // yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
-float pitch = 0.0f;
-float fov = 45.0f;
+double lastX = width / 2.0;
+double lastY = height / 2.0;
 
 // Called every frame
-void handleCameraControls(GLFWwindow *window) {
-    float cameraSpeed = 2.5 * deltaTime;
+void handleKeyCameraControls(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        cameraPos += cameraSpeed * cameraFront;
+        camera.processKeyboard(CameraMovement::FORWARD, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        cameraPos -= cameraSpeed * cameraFront;
+        camera.processKeyboard(CameraMovement::BACKWARD, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        camera.processKeyboard(CameraMovement::LEFT, deltaTime);
     }
 
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        camera.processKeyboard(CameraMovement::RIGHT, deltaTime);
     }
 }
 
-void mouseCallback(GLFWwindow *window, double xpos, double ypos) {
+void mouseCallback(GLFWwindow *, double xpos, double ypos) {
     if (firstMouse) {
         lastX = xpos;
         lastY = ypos;
         firstMouse = false;
     }
 
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos;
+    double xoffset = xpos - lastX;
+    double yoffset = lastY - ypos;
     lastX = xpos;
     lastY = ypos;
 
-    float sensitivity = 0.05;
-    xoffset *= sensitivity;
-    yoffset *= sensitivity;
-
-    yaw += xoffset;
-    pitch += yoffset;
-
-    if (pitch > 89.0f)
-        pitch = 89.0f;
-    if (pitch < -89.0f)
-        pitch = -89.0f;
-
-    glm::vec3 front;
-    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    front.y = sin(glm::radians(pitch));
-    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    cameraFront = glm::normalize(front);
+    camera.processMouseMovement(xoffset, yoffset);
 }
 
-void mouseScrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
-    if (fov >= 1.0f && fov <= 45.0f)
-        fov -= yoffset;
-    if (fov <= 1.0f)
-        fov = 1.0f;
-    if (fov >= 45.0f)
-        fov = 45.0f;
+void mouseScrollCallback(GLFWwindow *, double, double yoffset) {
+    camera.processMouseScroll(yoffset);
 }
 
 int main() {
@@ -264,7 +236,7 @@ int main() {
         lastFrame = currentFrame;
 
         // Handle camera controls
-        handleCameraControls(window);
+        handleKeyCameraControls(window);
 
         // Check errors
         int error;
@@ -277,11 +249,13 @@ int main() {
 
 
         // Update view matrix from camera
-        glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-        program.setUniform("view", view);
+        program.setUniform("view", camera.viewMatrix());
 
         // Update projection from fov
-        glm::mat4 projection = glm::perspective(glm::radians(fov), (float) width / (float) height, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.zoom()),
+                                                (float) width / (float) height,
+                                                0.1f,
+                                                100.0f);
         program.setUniform("projection", projection);
 
 
