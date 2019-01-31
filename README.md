@@ -29,4 +29,6 @@
     - [Materials](https://learnopengl.com/Lighting/Materials)
 - [Lesson11](src/lesson11_lighting_maps)
     - [Lighting-Maps](https://learnopengl.com/Lighting/Lighting-maps)
+- [Lesson12](src/lesson12_light_casters)
+    - [Light-Casters](https://learnopengl.com/Lighting/Light-casters)
     
