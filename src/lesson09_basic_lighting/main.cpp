@@ -287,6 +287,10 @@ int main() {
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
+        // Move around the light
+        lightPos.x = 1.0f + sin(glfwGetTime()) * 2.0f;
+        lightPos.y = sin(glfwGetTime() / 2.0f) * 1.0f;
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
