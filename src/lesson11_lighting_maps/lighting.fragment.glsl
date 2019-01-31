@@ -8,7 +8,7 @@ in vec3 fragPos;
 
 struct Material {
     sampler2D diffuse;
-    vec3 specular;
+    sampler2D specular;
     float shininess;
 };
 
@@ -46,7 +46,7 @@ void main() {
 
     // Specular light
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    vec3 specular = light.specular * (spec * material.specular);
+    vec3 specular = light.specular * spec * vec3(texture(material.specular, texCoords));
 
     // Combine light and color contributions
     vec3 result = specular + diffuse + ambient;

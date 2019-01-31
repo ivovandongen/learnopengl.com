@@ -27,4 +27,6 @@
     - [Basic-Lighting](https://learnopengl.com/Lighting/Basic-Lighting)
 - [Lesson10](src/lesson10_materials)
     - [Materials](https://learnopengl.com/Lighting/Materials)
+- [Lesson11](src/lesson11_lighting_maps)
+    - [Lighting-Maps](https://learnopengl.com/Lighting/Lighting-maps)
     

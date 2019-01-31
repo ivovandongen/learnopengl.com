@@ -181,10 +181,15 @@ int main() {
             -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
     };
 
-    // Load lighting map
+    // Load diffuse lighting map
     glActiveTexture(GL_TEXTURE0);
-    Texture lightingMap{Image{"container2.png"}};
-    lightingMap.bind();
+    Texture diffuseLightingMap{Image{"container2.png"}};
+    diffuseLightingMap.bind();
+
+    // Load specular lighting map
+    glActiveTexture(GL_TEXTURE1);
+    Texture specularLightingMap{Image{"container2_specular.png"}};
+    specularLightingMap.bind();
 
     // Load lighting shaders/program
     Program lightingProgram(
@@ -195,8 +200,8 @@ int main() {
 
     // Static Material properties
     lightingProgram.setUniform("material.diffuse", 0); // Sampler id
-    lightingProgram.setUniform("material.specular", {0.5f, 0.5f, 0.5f});
-    lightingProgram.setUniform("material.shininess", 32.0f);
+    lightingProgram.setUniform("material.specular", 1); // Sampler id
+    lightingProgram.setUniform("material.shininess", 32.f);
 
     // Static light properties
     lightingProgram.setUniform("light.ambient", {0.2f, 0.2f, 0.2f});
