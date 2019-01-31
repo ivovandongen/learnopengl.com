@@ -133,7 +133,7 @@ int main() {
     auto version = glGetString(GL_VERSION);
     std::cout << "Using OpenGL version: " << version << std::endl;
 
-    glClearColor(0, 0, 0, 1);
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glEnable(GL_DEPTH_TEST);
 
     float vertices[] = {
@@ -185,8 +185,6 @@ int main() {
             readFile("lighting.vertex.glsl"),
             readFile("lighting.fragment.glsl")
     );
-    lightingProgram.bind();
-    lightingProgram.setUniform("lightPos", lightPos);
 
     // Create cubeVao
     unsigned int cubeVao;
@@ -256,6 +254,8 @@ int main() {
             lightingProgram.bind();
             lightingProgram.setUniform("objectColor", 1.0f, 0.5f, 0.31f);
             lightingProgram.setUniform("lightColor", 1.0f, 1.0f, 1.0f);
+            lightingProgram.setUniform("lightPos", lightPos);
+            lightingProgram.setUniform("viewPos", camera.position());
 
             lightingProgram.setUniform("projection", projection);
             lightingProgram.setUniform("view", view);

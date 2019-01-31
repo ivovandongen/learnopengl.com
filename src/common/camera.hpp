@@ -67,9 +67,16 @@ public:
      *
      * @return the zoom
      */
-    inline float zoom() {
+    inline float zoom() const {
         return _zoom;
     };
+
+    /**
+     * @return the camera position
+     */
+    inline glm::vec3 position() const {
+        return _position;
+    }
 
 private:
     // Camera Attributes
