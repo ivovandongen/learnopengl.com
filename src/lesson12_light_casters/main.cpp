@@ -205,6 +205,7 @@ int main() {
     lightingProgram.setUniform("light.linear", 0.09f);
     lightingProgram.setUniform("light.quadratic", 0.032f);
     lightingProgram.setUniform("light.cutOff", glm::cos(glm::radians(12.5f)));
+    lightingProgram.setUniform("light.outerCutOff", glm::cos(glm::radians(17.5f)));
     lightingProgram.setUniform("light.ambient", {0.1f, 0.1f, 0.1f});
     lightingProgram.setUniform("light.diffuse", {0.8f, 0.8f, 0.8f});
     lightingProgram.setUniform("light.specular", {1.0f, 1.0f, 1.0f});
