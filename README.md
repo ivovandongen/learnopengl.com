@@ -31,4 +31,6 @@
     - [Lighting-Maps](https://learnopengl.com/Lighting/Lighting-maps)
 - [Lesson12](src/lesson12_light_casters)
     - [Light-Casters](https://learnopengl.com/Lighting/Light-casters)
+- [Lesson13](src/lesson13_multiple_lights)
+    - [Multiple-lights](https://learnopengl.com/Lighting/Multiple-lights)
     
