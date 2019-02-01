@@ -74,8 +74,15 @@ public:
     /**
      * @return the camera position
      */
-    inline glm::vec3 position() const {
+    inline const glm::vec3& position() const {
         return _position;
+    }
+
+    /**
+     * @return the front of the camera
+     */
+    inline const glm::vec3& front() const {
+        return _front;
     }
 
 private:
