@@ -21,6 +21,9 @@ float lastFrame = 0.0f; // Time of last frame
 // Camera
 Camera camera{glm::vec3(0.0f, 0.0f, 3.0f)};
 
+// lighting
+glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+
 // Mouse
 bool firstMouse = true;
 double lastX = width / 2.0;
@@ -201,7 +204,10 @@ int main() {
     lightingProgram.setUniform("material.shininess", 32.f);
 
     // Static light properties
-    lightingProgram.setUniform("light.direction", {-0.2f, -1.0f, -0.3f});
+    lightingProgram.setUniform("light.constant",  1.0f);
+    lightingProgram.setUniform("light.linear",    0.09f);
+    lightingProgram.setUniform("light.quadratic", 0.032f);
+    lightingProgram.setUniform("light.position", lightPos);
     lightingProgram.setUniform("light.ambient", {0.2f, 0.2f, 0.2f});
     lightingProgram.setUniform("light.diffuse", {0.5f, 0.5f, 0.5f}); // darken the light a bit to fit the scene
     lightingProgram.setUniform("light.specular", {1.0f, 1.0f, 1.0f});
@@ -241,6 +247,21 @@ int main() {
             glm::vec3(1.5f, 0.2f, -1.5f),
             glm::vec3(-1.3f, 1.0f, -1.5f)
     };
+
+    // Load lamp program
+    Program lightProgram(
+            readFile("basic.vertex.glsl"),
+            readFile("basic.fragment.glsl")
+    );
+
+    unsigned int lightVao;
+    glGenVertexArrays(1, &lightVao);
+    glBindVertexArray(lightVao);
+    // we only need to bind to the VBO, the container's VBO's data already contains the correct data.
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    // set the vertex attributes (only position data for our lamp)
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) nullptr);
+    glEnableVertexAttribArray(0);
 
     while (!glfwWindowShouldClose(window)) {
         // Update time
@@ -284,6 +305,23 @@ int main() {
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
             lightingProgram.setUniform("model", model);
 
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+
+        {
+            // Draw the light
+            
+            lightProgram.bind();
+            lightProgram.setUniform("projection", projection);
+            lightProgram.setUniform("view", view);
+
+            // world transformation
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, lightPos);
+            model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
+            lightProgram.setUniform("model", model);
+
+            glBindVertexArray(lightVao);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
