@@ -5,14 +5,14 @@
 
 class Texture {
 public:
-    Texture(const Image &image, bool generateMipmap = true);
+    explicit Texture(const Image &image, bool generateMipmap = true);
 
     ~Texture();
 
-    void bind();
+    void bind() const;
 
-    void unbind();
+    void unbind() const;
 
 private:
-    GLuint _id;
+    GLuint _id{0};
 };

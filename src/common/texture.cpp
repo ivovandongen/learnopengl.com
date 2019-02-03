@@ -12,7 +12,21 @@ Texture::Texture(const Image &image, bool generateMipmap) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    auto format = image.channels() == 3 ? GL_RGB : GL_RGBA;
+    GLenum format;
+    switch (image.channels()) {
+        case 1:
+            format = GL_RED;
+            break;
+        case 3:
+            format = GL_RGB;
+            break;
+        case 4:
+            format = GL_RGBA;
+            break;
+        default:
+            format = GL_RGB;
+    }
+
 
     glTexImage2D(GL_TEXTURE_2D, 0, format, image.width(), image.height(), 0, format, GL_UNSIGNED_BYTE, image.data());
 
@@ -25,10 +39,10 @@ Texture::~Texture() {
     glDeleteTextures(1, &_id);
 }
 
-void Texture::bind() {
+void Texture::bind() const {
     glBindTexture(GL_TEXTURE_2D, _id);
 }
 
-void Texture::unbind() {
+void Texture::unbind() const {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
