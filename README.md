@@ -49,4 +49,6 @@
     - [Stencil-testing](https://learnopengl.com/Advanced-OpenGL/Stencil-testing)
 - [Lesson17](src/lesson17_blending)
     - [Blending](https://learnopengl.com/Advanced-OpenGL/Blending)
+- [Lesson18](src/lesson18_face_culling)
+    - [Face-culling](https://learnopengl.com/Advanced-OpenGL/Face-culling)
     
