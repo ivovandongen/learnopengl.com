@@ -7,8 +7,23 @@ Texture::Texture(const Image &image, bool generateMipmap) {
     glBindTexture(GL_TEXTURE_2D, _id);
 
     // set the texture wrapping/filtering options (on the currently bound texture object)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    if (image.channels() == 4) {
+        // Note that when sampling textures at their borders, OpenGL interpolates
+        // the border values with the next repeated value of the texture (because
+        // we set its wrapping parameters to GL_REPEAT). This is usually okay, but
+        // since we're using transparent values, the top of the texture image gets
+        // its transparent value interpolated with the bottom border's solid color
+        // value. The result is then a slightly semi-transparent colored border
+        // you might see wrapped around your textured quad. To prevent this, set
+        // the texture wrapping method to GL_CLAMP_TO_EDGE whenever you use alpha
+        // textures
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    } else {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    }
+
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
