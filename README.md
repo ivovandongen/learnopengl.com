@@ -45,4 +45,6 @@
 
 - [Lesson15](src/lesson15_depth_buffer)
     - [Depth-testing](https://learnopengl.com/Advanced-OpenGL/Depth-testing)
+- [Lesson16](src/lesson16_stencil_testing)
+    - [Stencil-testing](https://learnopengl.com/Advanced-OpenGL/Stencil-testing)
     
