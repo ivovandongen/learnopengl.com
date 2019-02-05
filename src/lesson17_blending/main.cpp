@@ -12,6 +12,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <map>
 
 
 int width = 640, height = 480;
@@ -208,7 +209,7 @@ int main() {
             1.0f, 0.5f, 0.0f, 1.0f, 0.0f
     };
 
-    std::vector<glm::vec3> vegetation{
+    std::vector<glm::vec3> windows{
             {-1.5f, 0.0f, -0.48f},
             {1.5f,  0.0f, 0.51f},
             {0.0f,  0.0f, 0.7f},
@@ -257,7 +258,7 @@ int main() {
 
     Texture cubeTexture{Image{"resources/marble.jpg"}};
     Texture floorTexture{Image{"resources/metal.png"}};
-    Texture grassTexture{Image{"resources/grass.png", false}};
+    Texture windowTexture{Image{"resources/transparent_window.png", false}};
 
     basicProgram.bind();
     basicProgram.setUniform("texture1", 0);
@@ -312,13 +313,21 @@ int main() {
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
 
-        // Grass
+        // Windows
         glBindVertexArray(transparentVao);
         glActiveTexture(GL_TEXTURE0);
-        grassTexture.bind();
-        for (const auto &veg : vegetation) {
+        windowTexture.bind();
+
+        // sort by distance from camera
+        std::map<float, glm::vec3> sorted;
+        for (const auto &win : windows) {
+            float distance = glm::length(camera.position() - win);
+            sorted[distance] = win;
+        }
+
+        for (auto it = sorted.rbegin(); it != sorted.rend(); ++it) {
             model = glm::mat4(1.0f);
-            model = glm::translate(model, veg);
+            model = glm::translate(model, it->second);
             basicProgram.setUniform("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 6);
         }
