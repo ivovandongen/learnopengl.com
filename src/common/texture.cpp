@@ -2,9 +2,31 @@
 
 #include <stb_image.h>
 
-Texture::Texture(const Image &image, bool generateMipmap) {
+namespace {
+
+GLenum toGLFormat(int channels) {
+    switch (channels) {
+        case 1:
+            return GL_RED;
+
+        case 3:
+            return GL_RGB;
+
+        case 4:
+            return GL_RGBA;
+
+        default:
+            return GL_RGB;
+    }
+}
+
+} // namespace
+
+Texture::Texture(const Image &image, bool generateMipmap)
+        : _target(GL_TEXTURE_2D) {
+    
     glGenTextures(1, &_id);
-    glBindTexture(GL_TEXTURE_2D, _id);
+    glBindTexture(_target, _id);
 
     // set the texture wrapping/filtering options (on the currently bound texture object)
     if (image.channels() == 4) {
@@ -17,47 +39,57 @@ Texture::Texture(const Image &image, bool generateMipmap) {
         // you might see wrapped around your textured quad. To prevent this, set
         // the texture wrapping method to GL_CLAMP_TO_EDGE whenever you use alpha
         // textures
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(_target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(_target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     } else {
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(_target, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(_target, GL_TEXTURE_WRAP_T, GL_REPEAT);
     }
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    GLenum format;
-    switch (image.channels()) {
-        case 1:
-            format = GL_RED;
-            break;
-        case 3:
-            format = GL_RGB;
-            break;
-        case 4:
-            format = GL_RGBA;
-            break;
-        default:
-            format = GL_RGB;
-    }
+    GLenum format = toGLFormat(image.channels());
 
-
-    glTexImage2D(GL_TEXTURE_2D, 0, format, image.width(), image.height(), 0, format, GL_UNSIGNED_BYTE, image.data());
+    glTexImage2D(_target, 0, format, image.width(), image.height(), 0, format, GL_UNSIGNED_BYTE, image.data());
 
     if (generateMipmap) {
-        glGenerateMipmap(GL_TEXTURE_2D);
+        glGenerateMipmap(_target);
     }
 }
 
-Texture::Texture(unsigned int width, unsigned int height) {
+Texture::Texture(const std::array<const Image, 6> &images, bool generateMipmap)
+        : _target(GL_TEXTURE_CUBE_MAP) {
     glGenTextures(1, &_id);
-    glBindTexture(GL_TEXTURE_2D, _id);
+    glBindTexture(_target, _id);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+    for (unsigned int i = 0; i < images.size(); i++) {
+        const auto &image = images[i];
+        GLenum format = toGLFormat(image.channels());
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, image.width(), image.height(), 0, format,
+                     GL_UNSIGNED_BYTE, image.data());
+    }
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(_target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(_target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(_target, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    if (generateMipmap) {
+        glGenerateMipmap(_target);
+    }
+}
+
+Texture::Texture(unsigned int width, unsigned int height)
+        : _target(GL_TEXTURE_2D) {
+    glGenTextures(1, &_id);
+    glBindTexture(_target, _id);
+
+    glTexImage2D(_target, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+
+    glTexParameteri(_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
 Texture::~Texture() {
@@ -65,9 +97,9 @@ Texture::~Texture() {
 }
 
 void Texture::bind() const {
-    glBindTexture(GL_TEXTURE_2D, _id);
+    glBindTexture(_target, _id);
 }
 
 void Texture::unbind() const {
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindTexture(_target, 0);
 }
