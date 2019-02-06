@@ -13,19 +13,6 @@ IF (NOT GIT_COMMIT_HASH)
     set(GIT_COMMIT_HASH 0)
 ENDIF (NOT GIT_COMMIT_HASH)
 
-set(IRRXML_DIR ${ASSIMP_DIR}/contrib/irrXML)
-
-add_library(IrrXML STATIC
-        ${IRRXML_DIR}/CXMLReaderImpl.h
-        ${IRRXML_DIR}/heapsort.h
-        ${IRRXML_DIR}/irrArray.h
-        ${IRRXML_DIR}/irrString.h
-        ${IRRXML_DIR}/irrTypes.h
-        ${IRRXML_DIR}/irrXML.cpp
-        ${IRRXML_DIR}/irrXML.h)
-
-target_include_directories(IrrXML PUBLIC ${IRRXML_DIR})
-
 configure_file(
         ${ASSIMP_DIR}/revision.h.in
         ${CMAKE_CURRENT_BINARY_DIR}/revision.h
@@ -260,6 +247,24 @@ ADD_ASSIMP_IMPORTER(OBJ
         ${ASSIMP_DIR}/code/ObjExporter.cpp
         )
 
+set(IRRXML_DIR ${ASSIMP_DIR}/contrib/irrXML)
+
+add_library(IrrXML STATIC
+        ${IRRXML_DIR}/CXMLReaderImpl.h
+        ${IRRXML_DIR}/heapsort.h
+        ${IRRXML_DIR}/irrArray.h
+        ${IRRXML_DIR}/irrString.h
+        ${IRRXML_DIR}/irrTypes.h
+        ${IRRXML_DIR}/irrXML.cpp
+        ${IRRXML_DIR}/irrXML.h)
+
+target_include_directories(IrrXML
+        PUBLIC ${IRRXML_DIR}
+        # Needed because IrrXML references assimp..
+        PRIVATE ${ASSIMP_DIR}/include
+        PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/include
+        )
+
 add_library(assimp STATIC
         # Assimp Files
         ${Core_SRCS}
@@ -344,11 +349,13 @@ target_include_directories(assimp
         PRIVATE ${ASSIMP_DIR}/code
         PRIVATE ${ASSIMP_DIR}/include
         PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
+        PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/include
         )
 
 target_include_directories(assimp
         SYSTEM INTERFACE ${ASSIMP_DIR}/code
         SYSTEM INTERFACE ${ASSIMP_DIR}/include
+        SYSTEM INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/include
         )
 
 target_link_libraries(assimp PUBLIC IrrXML)
