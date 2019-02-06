@@ -135,8 +135,53 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
 
-    Program modelProgram(readFile("basic.vertex.glsl"), readFile("basic.fragment.glsl"));
+    Program cubeProgram(readFile("basic.vertex.glsl"), readFile("basic.fragment.glsl"));
     Program skyboxProgram(readFile("skybox.vertex.glsl"), readFile("skybox.fragment.glsl"));
+
+    float cubeVertices[] = {
+            // positions          // normals
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+            0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+            0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+            0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+            -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+            0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+            -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+
+            -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
+            -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
+
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+            0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+
+            -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+            0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+            0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+            0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+
+            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+            0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f
+    };
 
     float skyboxVertices[] = {
             // positions
@@ -183,6 +228,19 @@ int main() {
             1.0f, -1.0f, 1.0f
     };
 
+    // cube VAO
+    unsigned int cubeVAO, cubeVBO;
+    glGenVertexArrays(1, &cubeVAO);
+    glGenBuffers(1, &cubeVBO);
+    glBindVertexArray(cubeVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) nullptr);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) (3 * sizeof(float)));
+    glBindVertexArray(0);
+
     // skybox VAO
     unsigned int skyboxVao, skyboxVbo;
     glGenVertexArrays(1, &skyboxVao);
@@ -202,11 +260,9 @@ int main() {
                                   Image{"resources/skybox/back.jpg", false}
                           }};
 
-    Model model{"resources/nanosuit/nanosuit.obj"};
 
-
-    modelProgram.bind();
-    modelProgram.setUniform("skybox", 0);
+    cubeProgram.bind();
+    cubeProgram.setUniform("skybox", 0);
 
     skyboxProgram.bind();
     skyboxProgram.setUniform("skybox", 0);
@@ -237,20 +293,19 @@ int main() {
         glm::mat4 projection = glm::perspective(glm::radians(camera.zoom()), (float) width / (float) height, 0.1f,
                                                 100.0f);
 
-        // Draw model
+        // Draw cube
         {
-            modelProgram.bind();
-            glm::mat4 modelM = glm::mat4(1.0f);
-            modelM = glm::translate(modelM, glm::vec3(0.0f, -1.75f, 0.0f)); // translate it down so it's at the center of the scene
-            modelM = glm::scale(modelM, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
-            modelProgram.setUniform("model", modelM);
-            modelProgram.setUniform("view", view);
-            modelProgram.setUniform("projection", projection);
-            modelProgram.setUniform("cameraPos", camera.position());
+            cubeProgram.bind();
+            glm::mat4 model = glm::mat4(1.0f);
+            cubeProgram.setUniform("model", model);
+            cubeProgram.setUniform("view", view);
+            cubeProgram.setUniform("projection", projection);
+            cubeProgram.setUniform("cameraPos", camera.position());
 
+            glBindVertexArray(cubeVAO);
             glActiveTexture(GL_TEXTURE0);
             skyboxTexture.bind();
-            model.draw(modelProgram);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
         // Draw skybox
