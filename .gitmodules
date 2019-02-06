@@ -10,3 +10,6 @@
 [submodule "deps/assimp"]
 	path = deps/assimp
 	url = git@github.com:assimp/assimp.git
+[submodule "deps/tl-optional"]
+	path = deps/tl-optional
+	url = git@github.com:TartanLlama/optional.git
