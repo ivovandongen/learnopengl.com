@@ -137,7 +137,7 @@ int main() {
     glEnable(GL_DEPTH_TEST);
 
     Program fbProgram(readFile("basic.vertex.glsl"), readFile("basic.fragment.glsl"));
-    Program screenProgram(readFile("simple.vertex.glsl"), readFile("inverted.fragment.glsl"));
+    Program screenProgram(readFile("simple.vertex.glsl"), readFile("gs.fragment.glsl"));
 
     float cubeVertices[] = {
             // positions          // texture Coords
