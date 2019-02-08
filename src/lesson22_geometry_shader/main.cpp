@@ -136,7 +136,11 @@ int main() {
     glEnable(GL_DEPTH_TEST);
 
 
-    Program program(readFile("vertex.glsl"), readFile("fragment.glsl"));
+    Program program(
+            readFile("vertex.glsl"),
+            readFile("geometry.glsl"),
+            readFile("fragment.glsl")
+    );
 
     float points[] = {
             -0.5f,  0.5f, // top-left

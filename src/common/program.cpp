@@ -6,6 +6,19 @@
 
 namespace {
 
+inline std::string shaderType(GLenum type) {
+    switch (type) {
+        case GL_VERTEX_SHADER :
+            return "Vertex";
+        case GL_GEOMETRY_SHADER :
+            return "Geometry";
+        case GL_FRAGMENT_SHADER :
+            return "Fragment";
+        default:
+            return "UNKNOWN";
+    }
+}
+
 GLuint loadShader(GLuint program, const std::string &shaderSource, GLuint type) {
     GLuint shaderId = glCreateShader(type);
     auto source = shaderSource.c_str();
@@ -22,7 +35,7 @@ GLuint loadShader(GLuint program, const std::string &shaderSource, GLuint type) 
         std::vector<GLchar> errorLog(maxLength);
         glGetShaderInfoLog(shaderId, maxLength, &maxLength, &errorLog[0]);
         std::string message = std::string("Could not compile ")
-                              + (type == GL_VERTEX_SHADER ? "Vertex" : "Fragment") + " shader\n" +
+                              + shaderType(type) + " shader\n" +
                               errorLog.data();
         std::cout << message << std::endl;
     }
@@ -41,6 +54,19 @@ Program::Program(const std::string &vert, const std::string &frag) {
     glLinkProgram(_id);
     glValidateProgram(_id);
     glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+}
+
+Program::Program(const std::string &vert, const std::string &geom, const std::string &frag) {
+    _id = glCreateProgram();
+    auto vertexShader = loadShader(_id, vert, GL_VERTEX_SHADER);
+    auto geometryShader = loadShader(_id, geom, GL_GEOMETRY_SHADER);
+    auto fragmentShader = loadShader(_id, frag, GL_FRAGMENT_SHADER);
+
+    glLinkProgram(_id);
+    glValidateProgram(_id);
+    glDeleteShader(vertexShader);
+    glDeleteShader(geometryShader);
     glDeleteShader(fragmentShader);
 }
 

@@ -11,6 +11,8 @@ class Program {
 public:
     Program(const std::string &vert, const std::string &frag);
 
+    Program(const std::string &vert, const std::string &geom, const std::string &frag);
+
     ~Program();
 
     GLuint id();
