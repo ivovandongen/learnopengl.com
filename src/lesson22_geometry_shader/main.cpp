@@ -133,9 +133,14 @@ int main() {
     auto version = glGetString(GL_VERSION);
     std::cout << "Using OpenGL version: " << version << std::endl;
 
+    Program normalDisplayProgram(
+            readFile("normals.vertex.glsl"),
+            readFile("normals.geometry.glsl"),
+            readFile("normals.fragment.glsl")
+    );
+
     Program program(
             readFile("vertex.glsl"),
-            readFile("geometry.glsl"),
             readFile("fragment.glsl")
     );
     program.bind();
@@ -164,21 +169,26 @@ int main() {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Set time in geometry shader
-        program.setUniform("time", (float) glfwGetTime());
-
-        // view/projection transformations
+        // model/view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.zoom()), (float)width / (float)height, 0.1f, 100.0f);
         glm::mat4 view = camera.viewMatrix();
-        program.setUniform("projection", projection);
-        program.setUniform("view", view);
-
-        // render the loaded model
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f)); // translate it down so it's at the center of the scene
         model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
+
+        // render the loaded model
+        program.bind();
+        program.setUniform("projection", projection);
+        program.setUniform("view", view);
         program.setUniform("model", model);
         nanosuit.draw(program);
+
+        // Render the normals
+        normalDisplayProgram.bind();
+        normalDisplayProgram.setUniform("projection", projection);
+        normalDisplayProgram.setUniform("view", view);
+        normalDisplayProgram.setUniform("model", model);
+        nanosuit.draw(normalDisplayProgram);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
