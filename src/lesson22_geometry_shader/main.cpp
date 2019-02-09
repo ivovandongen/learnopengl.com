@@ -133,34 +133,17 @@ int main() {
     auto version = glGetString(GL_VERSION);
     std::cout << "Using OpenGL version: " << version << std::endl;
 
-    glEnable(GL_DEPTH_TEST);
-
-
     Program program(
             readFile("vertex.glsl"),
             readFile("geometry.glsl"),
             readFile("fragment.glsl")
     );
+    program.bind();
 
-    float points[] = {
-            -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, // top-left
-            0.5f, 0.5f, 0.0f, 1.0f, 0.0f, // top-right
-            0.5f, -0.5f, 0.0f, 0.0f, 1.0f, // bottom-right
-            -0.5f, -0.5f, 1.0f, 1.0f, 0.0f  // bottom-left
-    };
+    Model nanosuit{"resources/nanosuit/nanosuit.obj"};
 
-    // point VAO
-    unsigned int pointVAO, pointVBO;
-    glGenVertexArrays(1, &pointVAO);
-    glGenBuffers(1, &pointVBO);
-    glBindVertexArray(pointVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, pointVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) nullptr);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) (3 * sizeof(float)));
-
+    glEnable(GL_DEPTH_TEST);
+    glClearColor(.1f, .1f, .1f, 1.f);
 
     while (!glfwWindowShouldClose(window)) {
         // Update time
@@ -178,16 +161,24 @@ int main() {
             glfwSetWindowShouldClose(window, GLFW_TRUE);
         }
 
-        glClearColor(1.f, 1.f, 1.f, 1.f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//        glPointSize(5);
 
-        // draw points
-        {
-            glBindVertexArray(pointVAO);
-            program.bind();
-            glDrawArrays(GL_POINTS, 0, 4);
-        }
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Set time in geometry shader
+        program.setUniform("time", (float) glfwGetTime());
+
+        // view/projection transformations
+        glm::mat4 projection = glm::perspective(glm::radians(camera.zoom()), (float)width / (float)height, 0.1f, 100.0f);
+        glm::mat4 view = camera.viewMatrix();
+        program.setUniform("projection", projection);
+        program.setUniform("view", view);
+
+        // render the loaded model
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f)); // translate it down so it's at the center of the scene
+        model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
+        program.setUniform("model", model);
+        nanosuit.draw(program);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
