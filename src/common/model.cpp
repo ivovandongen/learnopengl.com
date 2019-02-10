@@ -14,7 +14,7 @@ Model::Model(const std::string &path) {
 }
 
 void Model::draw(const Program &program) const {
-    for (const auto &mesh : meshes) {
+    for (const auto &mesh : _meshes) {
         mesh.draw(program);
     }
 }
@@ -28,7 +28,7 @@ void Model::loadModel(const std::string &path) {
         return;
     }
 
-    directory = path.substr(0, path.find_last_of('/'));
+    _directory = path.substr(0, path.find_last_of('/'));
 
     processNode(scene->mRootNode, scene);
 }
@@ -37,7 +37,7 @@ void Model::processNode(aiNode *node, const aiScene *scene) {
     // process all the node's meshes (if any)
     for (unsigned int i = 0; i < node->mNumMeshes; i++) {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-        meshes.push_back(processMesh(mesh, scene));
+        _meshes.push_back(processMesh(mesh, scene));
     }
 
     // then do the same for each of its children
@@ -115,7 +115,7 @@ Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type, const std::stri
         } else {
             // if texture hasn't been loaded already, load it and add to loaded textures
             Mesh::MaterialTexture mt{
-                    std::make_shared<Texture>(Image{directory + '/' + str.C_Str()}, true),
+                    std::make_shared<Texture>(Image{_directory + '/' + str.C_Str()}, true),
                     typeName,
                     std::string{str.C_Str()}
             };

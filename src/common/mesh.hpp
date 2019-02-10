@@ -28,6 +28,22 @@ public:
 
     void draw(const Program &program) const;
 
+    inline unsigned int vao() const {
+        return _vao;
+    }
+
+    inline unsigned int vbo() const {
+        return _vbo;
+    }
+
+    inline unsigned int ibo() const {
+        return _ibo;
+    }
+
+    const std::vector<unsigned int> &indices() const {
+        return _indices;
+    }
+
 private:
     /*  Mesh Data  */
     std::vector<Vertex> _vertices;
@@ -35,7 +51,7 @@ private:
     std::vector<MaterialTexture> _textures;
 
     /*  Render data  */
-    unsigned int vao, vbo, ibo;
+    unsigned int _vao, _vbo, _ibo;
 
 private:
     void init();

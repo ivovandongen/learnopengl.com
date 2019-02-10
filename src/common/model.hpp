@@ -10,10 +10,14 @@ public:
 
     void draw(const Program &program) const;
 
+    const std::vector<Mesh>& meshes() const {
+        return _meshes;
+    }
+
 private:
     std::vector<Mesh::MaterialTexture> _loadedTextures;
-    std::vector<Mesh> meshes;
-    std::string directory;
+    std::vector<Mesh> _meshes;
+    std::string _directory;
 
 private:
     void loadModel(const std::string &path);

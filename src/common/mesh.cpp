@@ -31,22 +31,22 @@ void Mesh::draw(const Program &program) const {
     glActiveTexture(GL_TEXTURE0);
 
     // draw mesh
-    glBindVertexArray(vao);
+    glBindVertexArray(_vao);
     glDrawElements(GL_TRIANGLES, _indices.size(), GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
 }
 
 void Mesh::init() {
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-    glGenBuffers(1, &ibo);
+    glGenVertexArrays(1, &_vao);
+    glGenBuffers(1, &_vbo);
+    glGenBuffers(1, &_ibo);
 
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBindVertexArray(_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, _vbo);
 
     glBufferData(GL_ARRAY_BUFFER, _vertices.size() * sizeof(Vertex), &_vertices[0], GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, _indices.size() * sizeof(unsigned int), &_indices[0], GL_STATIC_DRAW);
 
     // vertex positions
