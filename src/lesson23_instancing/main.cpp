@@ -16,14 +16,14 @@
 #include <sstream>
 
 
-unsigned int width = 640, height = 480;
+unsigned int width = 1280, height = 720;
 
 // Timekeeping
 float deltaTime = 0.0f; // Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
 
 // Camera
-Camera camera{glm::vec3(0.0f, 0.0f, 3.0f)};
+Camera camera{glm::vec3(0.0f, 0.0f, 55.0f)};
 
 // Mouse
 bool firstMouse = true;
@@ -134,68 +134,45 @@ int main() {
     auto version = glGetString(GL_VERSION);
     std::cout << "Using OpenGL version: " << version << std::endl;
 
-    Program program(
+    Program basicProgram(
             readFile("vertex.glsl"),
             readFile("fragment.glsl")
     );
-    program.bind();
+    basicProgram.bind();
 
+    Model planetModel{"resources/planet/planet.obj"};
+    Model rockModel{"resources/rock/rock.obj"};
 
-    float quadVertices[] = {
-            // positions     // colors
-            -0.05f, 0.05f, 1.0f, 0.0f, 0.0f,
-            0.05f, -0.05f, 0.0f, 1.0f, 0.0f,
-            -0.05f, -0.05f, 0.0f, 0.0f, 1.0f,
+    unsigned int amount = 1000;
+    glm::mat4 *modelMatrices;
+    modelMatrices = new glm::mat4[amount];
+    srand(glfwGetTime()); // initialize random seed
+    float radius = 50.0;
+    float offset = 2.5f;
+    for (unsigned int i = 0; i < amount; i++) {
+        glm::mat4 model = glm::mat4(1.0f);
+        // 1. translation: displace along circle with 'radius' in range [-offset, offset]
+        float angle = (float) i / (float) amount * 360.0f;
+        float displacement = (rand() % (int) (2 * offset * 100)) / 100.0f - offset;
+        float x = sin(angle) * radius + displacement;
+        displacement = (rand() % (int) (2 * offset * 100)) / 100.0f - offset;
+        float y = displacement * 0.4f; // keep height of field smaller compared to width of x and z
+        displacement = (rand() % (int) (2 * offset * 100)) / 100.0f - offset;
+        float z = cos(angle) * radius + displacement;
+        model = glm::translate(model, glm::vec3(x, y, z));
 
-            -0.05f, 0.05f, 1.0f, 0.0f, 0.0f,
-            0.05f, -0.05f, 0.0f, 1.0f, 0.0f,
-            0.05f, 0.05f, 0.0f, 1.0f, 1.0f
-    };
+        // 2. scale: Scale between 0.05 and 0.25f
+        float scale = (rand() % 20) / 100.0f + 0.05;
+        model = glm::scale(model, glm::vec3(scale));
 
-    // Create the translations
-    glm::vec2 translations[100];
-    int index = 0;
-    float offset = 0.1f;
-    for (int y = -10; y < 10; y += 2) {
-        for (int x = -10; x < 10; x += 2) {
-            glm::vec2 translation;
-            translation.x = (float) x / 10.0f + offset;
-            translation.y = (float) y / 10.0f + offset;
-            translations[index++] = translation;
-        }
+        // 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector
+        float rotAngle = (rand() % 360);
+        model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
+
+        // 4. now add to list of matrices
+        modelMatrices[i] = model;
     }
 
-    // Set the translations as uniforms
-    for (unsigned int i = 0; i < 100; i++) {
-        std::stringstream ss;
-        ss << "offsets[" << i << "]";
-        program.setUniform(ss.str(), translations[i]);
-    }
-
-    unsigned int quadVAO, quadVBO;
-    glGenVertexArrays(1, &quadVAO);
-    glGenBuffers(1, &quadVBO);
-    glBindVertexArray(quadVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) nullptr);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) (2 * sizeof(float)));
-
-
-    // also set instance data
-    unsigned int instanceVBO;
-    glGenBuffers(1, &instanceVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 100, &translations[0], GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    glEnableVertexAttribArray(2);
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO); // this attribute comes from a different vertex buffer
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)nullptr);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glVertexAttribDivisor(2, 1); // tell OpenGL this is an instanced vertex attribute.
 
     glEnable(GL_DEPTH_TEST);
     glClearColor(.1f, .1f, .1f, 1.f);
@@ -218,8 +195,28 @@ int main() {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glBindVertexArray(quadVAO);
-        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 100);
+        // configure transformation matrices
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 1000.0f);
+        glm::mat4 view = camera.viewMatrix();;
+        basicProgram.bind();
+        basicProgram.setUniform("projection", projection);
+        basicProgram.setUniform("view", view);
+
+        // draw Planet
+        {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(0.0f, -3.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
+            basicProgram.setUniform("model", model);
+            planetModel.draw(basicProgram);
+        }
+
+        // draw meteorites
+        for (size_t i = 0; i < amount; i++) {
+            basicProgram.setUniform("model", modelMatrices[i]);
+            rockModel.draw(basicProgram);
+        }
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();
