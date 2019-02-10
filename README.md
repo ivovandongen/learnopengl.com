@@ -60,5 +60,7 @@
     - [Advanced-GLSL](https://learnopengl.com/Advanced-OpenGL/Advanced-GLSL)
 - [Lesson22](src/lesson22_geometry_shader)
     - [Geometry-Shader](https://learnopengl.com/Advanced-OpenGL/Geometry-Shader)
+- [Lesson23](src/lesson23_instancing)
+    - [Instancing](https://learnopengl.com/Advanced-OpenGL/Instancing)
 
     
