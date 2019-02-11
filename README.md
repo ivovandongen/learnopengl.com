@@ -68,5 +68,5 @@
     
 ## Docker linux build setup
 
-- `docker build -t linux-build .`
-- `docker run -v . --rm --name="linux-build" -it linux-build` 
+- Build image: `docker build -t linux-build .`
+- Run headless: `docker run -v ${PWD}:/work --rm --name="linux-build" -it linux-build` 
