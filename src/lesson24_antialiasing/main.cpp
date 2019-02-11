@@ -4,6 +4,7 @@
 #include <texture.hpp>
 #include <camera.hpp>
 #include <model.hpp>
+#include <framebuffer.hpp>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -84,8 +85,6 @@ int main() {
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-    glfwWindowHint(GLFW_SAMPLES, 4);
-
 
     GLFWwindow *window = glfwCreateWindow(width, height, "OpenGL Tutorial", nullptr, nullptr);
     if (!window) {
@@ -135,11 +134,11 @@ int main() {
     auto version = glGetString(GL_VERSION);
     std::cout << "Using OpenGL version: " << version << std::endl;
 
-    Program program(
+    Program framebufferProgram(
             readFile("vertex.glsl"),
             readFile("fragment.glsl")
     );
-    program.bind();
+    framebufferProgram.bind();
 
     GLfloat cubeVertices[] = {
             // Positions
@@ -197,11 +196,11 @@ int main() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *) nullptr);
     glBindVertexArray(0);
 
-
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_MULTISAMPLE);
-    
-    glClearColor(1.f, 1.f, 1.f, 1.0f);
+    Framebuffer framebuffer{width, height, 4};
+    framebuffer.bind();
+    if (!framebuffer.ready()) {
+        std::cout << "ERROR::FRAMEBUFFER:: Intermediate framebuffer is not complete!" << std::endl;
+    }
 
     while (!glfwWindowShouldClose(window)) {
         // Update time
@@ -219,13 +218,20 @@ int main() {
             glfwSetWindowShouldClose(window, GLFW_TRUE);
         }
 
+
+        // Render to framebuffer
+        framebuffer.bind();
+        framebufferProgram.bind();
+
+        glClearColor(1.f, 1.f, 1.f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glEnable(GL_DEPTH_TEST);
 
         // Set transformation matrices
         glm::mat4 projection = glm::perspective(camera.zoom(), (GLfloat) width / (GLfloat) height, 0.1f, 1000.0f);
-        program.setUniform("projection", projection);
-        program.setUniform("view", camera.viewMatrix());
-        program.setUniform("model", glm::mat4(1));
+        framebufferProgram.setUniform("projection", projection);
+        framebufferProgram.setUniform("view", camera.viewMatrix());
+        framebufferProgram.setUniform("model", glm::mat4(1));
 
         // Draw us a cube
         {
@@ -234,6 +240,11 @@ int main() {
         }
 
         glBindVertexArray(0);
+
+        // Blit msaa framebuffer to default framebuffer
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer.id());
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

@@ -20,7 +20,7 @@ public:
     /**
      * Create a sized texture for use in a framebuffer
      */
-    Texture(unsigned int width, unsigned int height);
+    Texture(unsigned int width, unsigned int height, unsigned int samples = 1);
 
     ~Texture();
 

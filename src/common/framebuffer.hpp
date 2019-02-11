@@ -9,7 +9,7 @@ class Framebuffer {
 public:
     static void bindDefault();
 
-    Framebuffer(unsigned int width, unsigned int height);
+    Framebuffer(unsigned int width, unsigned int height, unsigned int samples = 1);
 
     ~Framebuffer();
 
@@ -21,7 +21,11 @@ public:
 
     bool ready() const;
 
-    const Texture& texture();
+    GLuint id() const {
+        return _id;
+    }
+
+    const Texture &texture();
 
 private:
     GLuint _id;
