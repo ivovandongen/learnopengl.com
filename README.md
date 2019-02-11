@@ -66,3 +66,7 @@
     - [Anti-Aliasing](https://learnopengl.com/Advanced-OpenGL/Anti-Aliasing)
 
     
+## Docker linux build setup
+
+- `docker build -t linux-build .`
+- `docker run -v . --rm --name="linux-build" -it linux-build` 
