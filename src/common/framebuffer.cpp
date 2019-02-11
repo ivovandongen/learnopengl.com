@@ -2,8 +2,25 @@
 
 #include <cassert>
 
-void Framebuffer::bindDefault() {
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+namespace {
+
+void bindFramebuffer(GLuint id, Framebuffer::BindMode mode) {
+    switch (mode) {
+        case Framebuffer::BindMode::READ:
+            glBindFramebuffer(GL_READ_FRAMEBUFFER, id);
+            break;
+        case Framebuffer::BindMode::DRAW:
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id);
+            break;
+        default:
+            glBindFramebuffer(GL_FRAMEBUFFER, id);
+    }
+}
+
+} // namespace
+
+void Framebuffer::bindDefault(Framebuffer::BindMode mode) {
+    bindFramebuffer(0, mode);
 }
 
 Framebuffer::Framebuffer(unsigned int width, unsigned int height, unsigned int samples) {
@@ -42,8 +59,8 @@ Framebuffer::~Framebuffer() {
     glDeleteFramebuffers(1, &_id);
 }
 
-void Framebuffer::bind() const {
-    glBindFramebuffer(GL_FRAMEBUFFER, _id);
+void Framebuffer::bind(Framebuffer::BindMode mode) const {
+    bindFramebuffer(_id, mode);
 }
 
 void Framebuffer::unbind() const {

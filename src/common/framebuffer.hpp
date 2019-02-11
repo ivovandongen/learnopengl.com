@@ -7,13 +7,19 @@
 
 class Framebuffer {
 public:
-    static void bindDefault();
+    enum class BindMode {
+        READ,
+        DRAW,
+        READ_WRITE
+    };
+
+    static void bindDefault(BindMode mode = BindMode::READ_WRITE);
 
     Framebuffer(unsigned int width, unsigned int height, unsigned int samples = 1);
 
     ~Framebuffer();
 
-    void bind() const;
+    void bind(BindMode mode = BindMode::READ_WRITE) const;
 
     void unbind() const;
 

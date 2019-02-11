@@ -140,6 +140,11 @@ int main() {
     );
     framebufferProgram.bind();
 
+    Program screenProgram(
+            readFile("screen.vertex.glsl"),
+            readFile("screen.fragment.glsl")
+    );
+
     GLfloat cubeVertices[] = {
             // Positions
             -0.5f, -0.5f, -0.5f,
@@ -185,6 +190,18 @@ int main() {
             -0.5f, 0.5f, -0.5f
     };
 
+    // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+    float quadVertices[] = {
+            // positions   // texCoords
+            -1.0f, 1.0f, 0.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f,
+            1.0f, -1.0f, 1.0f, 0.0f,
+
+            -1.0f, 1.0f, 0.0f, 1.0f,
+            1.0f, -1.0f, 1.0f, 0.0f,
+            1.0f, 1.0f, 1.0f, 1.0f
+    };
+
     // Setup cube VAO
     GLuint cubeVAO, cubeVBO;
     glGenVertexArrays(1, &cubeVAO);
@@ -196,11 +213,24 @@ int main() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *) nullptr);
     glBindVertexArray(0);
 
-    Framebuffer framebuffer{width, height, 4};
-    framebuffer.bind();
-    if (!framebuffer.ready()) {
-        std::cout << "ERROR::FRAMEBUFFER:: Intermediate framebuffer is not complete!" << std::endl;
-    }
+    // setup screen VAO
+    unsigned int quadVAO, quadVBO;
+    glGenVertexArrays(1, &quadVAO);
+    glGenBuffers(1, &quadVBO);
+    glBindVertexArray(quadVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *) nullptr);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *) (2 * sizeof(float)));
+
+    Framebuffer msaaFB{width, height, 4};
+    Framebuffer intermediateFB{width, height};
+
+    screenProgram.bind();
+    screenProgram.setUniform("screenTexture", 0);
+
 
     while (!glfwWindowShouldClose(window)) {
         // Update time
@@ -220,7 +250,7 @@ int main() {
 
 
         // Render to framebuffer
-        framebuffer.bind();
+        msaaFB.bind();
         framebufferProgram.bind();
 
         glClearColor(1.f, 1.f, 1.f, 1.0f);
@@ -241,10 +271,25 @@ int main() {
 
         glBindVertexArray(0);
 
-        // Blit msaa framebuffer to default framebuffer
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer.id());
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        // Blit msaa framebuffer to intermediate framebuffer
+        msaaFB.bind(Framebuffer::BindMode::READ);
+        intermediateFB.bind(Framebuffer::BindMode::DRAW);
         glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+        // Draw framebuffer to screen
+        Framebuffer::bindDefault();
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glDisable(GL_DEPTH_TEST);
+
+
+        screenProgram.bind();
+        glBindVertexArray(quadVAO);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, intermediateFB.texture().id());
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        glBindVertexArray(0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
