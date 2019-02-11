@@ -84,6 +84,7 @@ int main() {
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
+    glfwWindowHint(GLFW_SAMPLES, 4);
 
 
     GLFWwindow *window = glfwCreateWindow(width, height, "OpenGL Tutorial", nullptr, nullptr);
@@ -198,6 +199,8 @@ int main() {
 
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE);
+    
     glClearColor(1.f, 1.f, 1.f, 1.0f);
 
     while (!glfwWindowShouldClose(window)) {
