@@ -62,5 +62,7 @@
     - [Geometry-Shader](https://learnopengl.com/Advanced-OpenGL/Geometry-Shader)
 - [Lesson23](src/lesson23_instancing)
     - [Instancing](https://learnopengl.com/Advanced-OpenGL/Instancing)
+- [Lesson24](src/lesson24_antialiasing)
+    - [Anti-Aliasing](https://learnopengl.com/Advanced-OpenGL/Anti-Aliasing)
 
     
