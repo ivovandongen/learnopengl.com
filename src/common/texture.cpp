@@ -4,27 +4,24 @@
 
 namespace {
 
-GLenum toGLFormat(int channels) {
+GLenum toGLFormat(int channels, bool gammaCorrected = false) {
     switch (channels) {
         case 1:
             return GL_RED;
-
         case 3:
-            return GL_RGB;
-
+            return gammaCorrected ? GL_SRGB : GL_RGB;
         case 4:
-            return GL_RGBA;
-
+            return gammaCorrected ? GL_SRGB_ALPHA : GL_RGBA;
         default:
-            return GL_RGB;
+            return gammaCorrected ? GL_SRGB : GL_RGB;;
     }
 }
 
 } // namespace
 
-Texture::Texture(const Image &image, bool generateMipmap)
+Texture::Texture(const Image &image, bool generateMipmap, bool gammaCorrected)
         : _target(GL_TEXTURE_2D) {
-    
+
     glGenTextures(1, &_id);
     glBindTexture(_target, _id);
 
@@ -50,15 +47,16 @@ Texture::Texture(const Image &image, bool generateMipmap)
     glTexParameteri(_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     GLenum format = toGLFormat(image.channels());
+    GLenum internalFormat = toGLFormat(image.channels(), gammaCorrected);
 
-    glTexImage2D(_target, 0, format, image.width(), image.height(), 0, format, GL_UNSIGNED_BYTE, image.data());
+    glTexImage2D(_target, 0, internalFormat, image.width(), image.height(), 0, format, GL_UNSIGNED_BYTE, image.data());
 
     if (generateMipmap) {
         glGenerateMipmap(_target);
     }
 }
 
-Texture::Texture(const std::array<const Image, 6> &images, bool generateMipmap)
+Texture::Texture(const std::array<const Image, 6> &images, bool generateMipmap, bool gammaCorrected)
         : _target(GL_TEXTURE_CUBE_MAP) {
     glGenTextures(1, &_id);
     glBindTexture(_target, _id);
@@ -66,7 +64,8 @@ Texture::Texture(const std::array<const Image, 6> &images, bool generateMipmap)
     for (unsigned int i = 0; i < images.size(); i++) {
         const auto &image = images[i];
         GLenum format = toGLFormat(image.channels());
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, image.width(), image.height(), 0, format,
+        GLenum internalFormat = toGLFormat(image.channels(), gammaCorrected);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, image.width(), image.height(), 0, format,
                      GL_UNSIGNED_BYTE, image.data());
     }
 

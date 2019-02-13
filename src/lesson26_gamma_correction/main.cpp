@@ -123,7 +123,7 @@ int main() {
         if (key == GLFW_KEY_G && action == GLFW_PRESS) {
             gammaCorrection = !gammaCorrection;
             std::cout << "Gamma correction " << (gammaCorrection ? "ON" : "OFF") << std::endl;
-            return; 
+            return;
         }
     });
 
@@ -176,7 +176,7 @@ int main() {
     glBindVertexArray(0);
 
     // Texture
-    Texture floorTexture{Image{"resources/wood.png"}};
+    Texture floorTexture{Image{"resources/wood.png"}, true, true};
     program.setUniform("texture1", 0);
 
     // Light position

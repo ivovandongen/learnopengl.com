@@ -10,12 +10,12 @@ public:
     /**
      * Create 2D texture from image
      */
-    explicit Texture(const Image &image, bool generateMipmap = true);
+    explicit Texture(const Image &image, bool generateMipmap = true, bool gammaCorrected = false);
 
     /**
      * Create a cubemap from a set of images
      */
-    explicit Texture(const std::array<const Image, 6> &images, bool generateMipmap = true);
+    explicit Texture(const std::array<const Image, 6> &images, bool generateMipmap = true, bool gammaCorrected = false);
 
     /**
      * Create a sized texture for use in a framebuffer
