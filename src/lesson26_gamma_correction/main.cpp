@@ -68,6 +68,7 @@ void mouseScrollCallback(GLFWwindow *, double, double yoffset) {
 }
 
 bool gammaCorrection = false;
+bool quadraticAttenuation = false;
 
 int main() {
 
@@ -123,6 +124,12 @@ int main() {
         if (key == GLFW_KEY_G && action == GLFW_PRESS) {
             gammaCorrection = !gammaCorrection;
             std::cout << "Gamma correction " << (gammaCorrection ? "ON" : "OFF") << std::endl;
+            return;
+        }
+
+        if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
+            quadraticAttenuation = !quadraticAttenuation;
+            std::cout << "Quadratic attenuation " << (quadraticAttenuation ? "ON" : "OFF") << std::endl;
             return;
         }
     });
@@ -211,6 +218,7 @@ int main() {
         program.setUniform("lightPos", lightPos);
         program.setUniform("blinn", true);
         program.setUniform("gammaOn", gammaCorrection);
+        program.setUniform("quadraticAttenuation", quadraticAttenuation);
 
         // Draw us a plane
         {
