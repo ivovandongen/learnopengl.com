@@ -64,7 +64,11 @@
     - [Instancing](https://learnopengl.com/Advanced-OpenGL/Instancing)
 - [Lesson24](src/lesson24_antialiasing)
     - [Anti-Aliasing](https://learnopengl.com/Advanced-OpenGL/Anti-Aliasing)
+    
+## Advanced Lighting
 
+- [Lesson25](src/lesson25_advanced_lighting)
+    - [Advanced-Lighting](https://learnopengl.com/Advanced-Lighting/Advanced-Lighting)
     
 ## Docker linux build setup
 
