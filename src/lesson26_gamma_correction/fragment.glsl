@@ -12,8 +12,11 @@ uniform sampler2D floorTexture;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 uniform bool blinn;
+uniform bool gammaOn;
 
 void main() {
+     float gamma = gammaOn ? 2.2 : 1.0;
+
     vec3 color = texture(floorTexture, fs_in.texCoords).rgb;
 
     // ambient
@@ -31,7 +34,7 @@ void main() {
     float spec = 0.0;
 
     if(blinn) {
-        vec3 halfwayDir = normalize(lightDir + viewDir);  
+        vec3 halfwayDir = normalize(lightDir + viewDir);
         spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
     } else {
         vec3 reflectDir = reflect(-lightDir, normal);
@@ -40,4 +43,6 @@ void main() {
 
     vec3 specular = vec3(0.3) * spec; // assuming bright white light color
     fragColor = vec4(ambient + diffuse + specular, 1.0);
+
+    fragColor.rgb = pow(fragColor.rgb, vec3(1.0/gamma));
 }

@@ -198,13 +198,6 @@ int main() {
             glfwSetWindowShouldClose(window, GLFW_TRUE);
         }
 
-
-        if (gammaCorrection) {
-            glEnable(GL_FRAMEBUFFER_SRGB);
-        } else {
-            glDisable(GL_FRAMEBUFFER_SRGB);
-        }
-
         glClearColor(.1f, .1f, .1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -217,6 +210,7 @@ int main() {
         program.setUniform("viewPos", camera.position());
         program.setUniform("lightPos", lightPos);
         program.setUniform("blinn", true);
+        program.setUniform("gammaOn", gammaCorrection);
 
         // Draw us a plane
         {
