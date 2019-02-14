@@ -251,7 +251,9 @@ int main() {
         glActiveTexture(GL_TEXTURE0);
         woodTexture.bind();
 
+        glCullFace(GL_FRONT);
         renderScene(shadowMapProgram, planeVAO);
+        glCullFace(GL_BACK);
 
         Framebuffer::bindDefault();
 
