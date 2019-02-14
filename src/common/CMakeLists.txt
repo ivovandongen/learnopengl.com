@@ -11,6 +11,7 @@ add_library(common STATIC
         ${CMAKE_CURRENT_SOURCE_DIR}/file.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/framebuffer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/framebuffer.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/id.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/image.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/image.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/mesh.cpp

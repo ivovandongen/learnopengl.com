@@ -23,8 +23,28 @@ void Framebuffer::bindDefault(Framebuffer::BindMode mode) {
     bindFramebuffer(0, mode);
 }
 
+Framebuffer Framebuffer::createDepthBufferOnly(unsigned int width, unsigned int height) {
+    Framebuffer fb;
+
+    // Add a texture for the depth attachment
+    fb._texture = Texture::createDepthAttachmentTexture(width, height);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, fb._texture->id(), 0);
+
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+
+    assert(fb.ready());
+
+    return fb;
+}
+
+Framebuffer::Framebuffer() {
+    glGenFramebuffers(1, &*_id);
+    bind();
+}
+
 Framebuffer::Framebuffer(unsigned int width, unsigned int height, unsigned int samples) {
-    glGenFramebuffers(1, &_id);
+    glGenFramebuffers(1, &*_id);
 
     bind();
 
@@ -52,15 +72,18 @@ Framebuffer::Framebuffer(unsigned int width, unsigned int height, unsigned int s
 }
 
 Framebuffer::~Framebuffer() {
+    if (!_id) {
+        return;
+    }
     if (rbo) {
         glDeleteRenderbuffers(1, &rbo);
     }
     _texture.reset();
-    glDeleteFramebuffers(1, &_id);
+    glDeleteFramebuffers(1, &*_id);
 }
 
 void Framebuffer::bind(Framebuffer::BindMode mode) const {
-    bindFramebuffer(_id, mode);
+    bindFramebuffer(*_id, mode);
 }
 
 void Framebuffer::unbind() const {
@@ -70,7 +93,7 @@ void Framebuffer::unbind() const {
 bool Framebuffer::bound() const {
     GLint fbo;
     glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &fbo);
-    return _id == fbo;
+    return *_id == fbo;
 }
 
 bool Framebuffer::ready() const {
@@ -80,5 +103,5 @@ bool Framebuffer::ready() const {
 
 const Texture &Framebuffer::texture() {
     assert(_texture);
-    return _texture.value();
+    return *_texture;
 }

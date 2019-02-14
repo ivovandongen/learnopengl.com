@@ -71,6 +71,8 @@
     - [Advanced-Lighting](https://learnopengl.com/Advanced-Lighting/Advanced-Lighting)
 - [Lesson26](src/lesson26_gamma_correction)
     - [Gamma-Correction](https://learnopengl.com/Advanced-Lighting/Gamma-Correction)
+- [Lesson27](src/lesson27_shadow_mapping)
+    - [Shadow-Mapping](https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping)
     
 ## Docker linux build setup
 

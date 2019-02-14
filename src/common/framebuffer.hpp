@@ -1,5 +1,6 @@
 #pragma once
 
+#include <id.hpp>
 #include <texture.hpp>
 
 #include <glad/glad.h>
@@ -15,7 +16,12 @@ public:
 
     static void bindDefault(BindMode mode = BindMode::READ_WRITE);
 
+    static Framebuffer createDepthBufferOnly(unsigned int width, unsigned int height);
+
     Framebuffer(unsigned int width, unsigned int height, unsigned int samples = 1);
+
+    Framebuffer(Framebuffer&&) = default;
+    Framebuffer& operator=(Framebuffer&&) = default;
 
     ~Framebuffer();
 
@@ -28,13 +34,16 @@ public:
     bool ready() const;
 
     GLuint id() const {
-        return _id;
+        return *_id;
     }
 
     const Texture &texture();
 
+protected:
+    Framebuffer();
+
 private:
-    GLuint _id;
+    ID<GLuint> _id;
     tl::optional<Texture> _texture;
     GLuint rbo = 0;
 };

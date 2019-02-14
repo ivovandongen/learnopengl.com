@@ -22,8 +22,8 @@ GLenum toGLFormat(int channels, bool gammaCorrected = false) {
 Texture::Texture(const Image &image, bool generateMipmap, bool gammaCorrected)
         : _target(GL_TEXTURE_2D) {
 
-    glGenTextures(1, &_id);
-    glBindTexture(_target, _id);
+    glGenTextures(1, &*_id);
+    glBindTexture(_target, *_id);
 
     // set the texture wrapping/filtering options (on the currently bound texture object)
     if (image.channels() == 4) {
@@ -58,8 +58,8 @@ Texture::Texture(const Image &image, bool generateMipmap, bool gammaCorrected)
 
 Texture::Texture(const std::array<const Image, 6> &images, bool generateMipmap, bool gammaCorrected)
         : _target(GL_TEXTURE_CUBE_MAP) {
-    glGenTextures(1, &_id);
-    glBindTexture(_target, _id);
+    glGenTextures(1, &*_id);
+    glBindTexture(_target, *_id);
 
     for (unsigned int i = 0; i < images.size(); i++) {
         const auto &image = images[i];
@@ -82,8 +82,8 @@ Texture::Texture(const std::array<const Image, 6> &images, bool generateMipmap, 
 
 Texture::Texture(unsigned int width, unsigned int height, unsigned int samples)
         : _target(samples > 1 ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D) {
-    glGenTextures(1, &_id);
-    glBindTexture(_target, _id);
+    glGenTextures(1, &*_id);
+    glBindTexture(_target, *_id);
 
     if (samples > 1) {
         glTexImage2DMultisample(_target, samples, GL_RGB, width, height, GL_TRUE);
@@ -92,17 +92,33 @@ Texture::Texture(unsigned int width, unsigned int height, unsigned int samples)
         glTexParameteri(_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
-
 }
 
 Texture::~Texture() {
-    glDeleteTextures(1, &_id);
+    if (_id) {
+        glDeleteTextures(1, &*_id);
+    }
 }
 
 void Texture::bind() const {
-    glBindTexture(_target, _id);
+    glBindTexture(_target, *_id);
 }
 
 void Texture::unbind() const {
     glBindTexture(_target, 0);
+}
+
+Texture::Texture(GLenum target) : _target(target) {
+    glGenTextures(1, &*_id);
+    glBindTexture(_target, *_id);
+}
+
+Texture Texture::createDepthAttachmentTexture(unsigned int width, unsigned int height) {
+    Texture texture{GL_TEXTURE_2D};
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    return texture;
 }
