@@ -17,7 +17,9 @@
 #include <sstream>
 
 void renderScene(const Program &program, GLuint planeVAO);
+
 void renderQuad();
+
 void renderCube();
 
 unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
@@ -165,9 +167,22 @@ int main() {
     );
     quadProgram.bind();
 
+    Program program(
+            readFile("vertex.glsl"),
+            readFile("fragment.glsl")
+    );
+    program.bind();
+
     Texture woodTexture{Image{"resources/wood.png"}};
 
     Framebuffer shadowMapFB = Framebuffer::createDepthBufferOnly(SHADOW_WIDTH, SHADOW_HEIGHT);
+
+    program.bind();
+    program.setUniform("diffuseTexture", 0);
+    program.setUniform("shadowMap", 1);
+
+    quadProgram.bind();
+    quadProgram.setUniform("depthMap", 0);
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -197,6 +212,7 @@ int main() {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (6 * sizeof(float)));
     glBindVertexArray(0);
 
+    glm::vec3 lightPos(-2.0f, 4.0f, -1.0f);
 
     while (!glfwWindowShouldClose(window)) {
         // Update time
@@ -224,7 +240,7 @@ int main() {
         float near_plane = 1.0f, far_plane = 7.5f;
         glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
 
-        glm::mat4 lightView = glm::lookAt(glm::vec3(-2.0f, 4.0f, -1.0f),
+        glm::mat4 lightView = glm::lookAt(lightPos,
                                           glm::vec3(0.0f, 0.0f, 0.0f),
                                           glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -232,16 +248,39 @@ int main() {
 
         shadowMapProgram.bind();
         shadowMapProgram.setUniform("lightSpaceMatrix", lightSpaceMatrix);
+        glActiveTexture(GL_TEXTURE0);
+        woodTexture.bind();
 
         renderScene(shadowMapProgram, planeVAO);
+
         Framebuffer::bindDefault();
 
 
-        // Normal render pass
+        // Reset viewport
         glViewport(0, 0, width, height);
         glClearColor(.1f, .1f, .1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        // Normal render pass
+        program.bind();
+        glm::mat4 projection = glm::perspective(glm::radians(camera.zoom()), (float) width / (float) height, 0.1f,
+                                                100.0f);
+        glm::mat4 view = camera.viewMatrix();
+        program.setUniform("projection", projection);
+        program.setUniform("view", view);
+
+        // set light uniforms
+        program.setUniform("viewPos", camera.position());
+        program.setUniform("lightPos", lightPos);
+        program.setUniform("lightSpaceMatrix", lightSpaceMatrix);
+
+        glActiveTexture(GL_TEXTURE0);
+        woodTexture.bind();
+        glActiveTexture(GL_TEXTURE1);
+        shadowMapFB.texture().bind();
+        renderScene(program, planeVAO);
+        
+        // Debug quad render pass
         quadProgram.bind();
         quadProgram.setUniform("near_plane", near_plane);
         quadProgram.setUniform("far_plane", far_plane);
@@ -249,7 +288,7 @@ int main() {
         glActiveTexture(GL_TEXTURE0);
         shadowMapFB.texture().bind();
 
-        renderQuad();
+//        renderQuad();
 
         glBindVertexArray(0);
 
