@@ -279,7 +279,7 @@ int main() {
         glActiveTexture(GL_TEXTURE1);
         shadowMapFB.texture().bind();
         renderScene(program, planeVAO);
-        
+
         // Debug quad render pass
         quadProgram.bind();
         quadProgram.setUniform("near_plane", near_plane);
