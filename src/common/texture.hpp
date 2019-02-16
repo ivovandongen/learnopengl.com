@@ -9,7 +9,7 @@
 
 class Texture {
 public:
-    static Texture createDepthAttachmentTexture(unsigned int width, unsigned int height);
+    static Texture createDepthAttachmentTexture(unsigned int width, unsigned int height, bool cubeMap = false);
 
     /**
      * Create 2D texture from image

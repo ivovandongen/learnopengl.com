@@ -16,7 +16,7 @@ public:
 
     static void bindDefault(BindMode mode = BindMode::READ_WRITE);
 
-    static Framebuffer createDepthBufferOnly(unsigned int width, unsigned int height);
+    static Framebuffer createDepthBufferOnly(unsigned int width, unsigned int height, bool cubeMap = false);
 
     Framebuffer(unsigned int width, unsigned int height, unsigned int samples = 1);
 

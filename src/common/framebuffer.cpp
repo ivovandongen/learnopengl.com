@@ -23,12 +23,16 @@ void Framebuffer::bindDefault(Framebuffer::BindMode mode) {
     bindFramebuffer(0, mode);
 }
 
-Framebuffer Framebuffer::createDepthBufferOnly(unsigned int width, unsigned int height) {
+Framebuffer Framebuffer::createDepthBufferOnly(unsigned int width, unsigned int height, bool cubeMap) {
     Framebuffer fb;
 
     // Add a texture for the depth attachment
-    fb._texture = Texture::createDepthAttachmentTexture(width, height);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, fb._texture->id(), 0);
+    fb._texture = Texture::createDepthAttachmentTexture(width, height, cubeMap);
+    if (cubeMap) {
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, fb._texture->id(), 0);
+    } else {
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, fb._texture->id(), 0);
+    }
 
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
