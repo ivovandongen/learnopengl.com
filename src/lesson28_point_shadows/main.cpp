@@ -154,6 +154,12 @@ int main() {
             readFile("depth_map.fragment.glsl")
     );
 
+    Program lightProgram(
+            readFile("light.vertex.glsl"),
+            readFile("light.fragment.glsl")
+    );
+    lightProgram.bind();
+
     Program program(
             readFile("vertex.glsl"),
             readFile("fragment.glsl")
@@ -234,9 +240,20 @@ int main() {
         woodTexture.bind();
         glActiveTexture(GL_TEXTURE1);
         depthMapFB.texture().bind();
-        renderScene(program);
-        glBindVertexArray(0);
 
+        renderScene(program);
+
+        //Draw a cube in the light position
+        lightProgram.bind();
+        lightProgram.setUniform("projection", projection);
+        lightProgram.setUniform("view", view);
+        auto model = glm::mat4(1.0f);
+        model = glm::translate(model, lightPos);
+        model = glm::scale(model, glm::vec3(0.1f));
+        lightProgram.setUniform("model", model);
+        renderCube();
+
+        glBindVertexArray(0);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
