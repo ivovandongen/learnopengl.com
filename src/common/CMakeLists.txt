@@ -8,6 +8,9 @@ include(${CMAKE_SOURCE_DIR}/deps/glad.cmake)
 add_library(common STATIC
         ${CMAKE_CURRENT_SOURCE_DIR}/camera.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/camera.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/debug.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/debug.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/extensions.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/file.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/framebuffer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/framebuffer.hpp
