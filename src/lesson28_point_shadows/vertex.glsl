@@ -16,8 +16,7 @@ uniform mat4 model;
 
 uniform bool reverse_normals;
 
-void main()
-{    
+void main() {
     vs_out.fragPos = vec3(model * vec4(aPos, 1.0));
 
     // a slight hack to make sure the outer large cube displays lighting from the 'inside' instead of the default 'outside'.
