@@ -75,7 +75,9 @@
     - [Shadow-Mapping](https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping)
 - [Lesson28](src/lesson28_point_shadows)
     - [Point-Shadows](https://learnopengl.com/Advanced-Lighting/Shadows/Point-Shadows)
-    
+- [Lesson29](src/lesson29_normal_mapping)
+    - [Normal-Mapping](https://learnopengl.com/Advanced-Lighting/Normal-Mapping)
+        
 ## Docker linux build setup
 
 - Build image: `docker build -t linux-build .`
