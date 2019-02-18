@@ -79,6 +79,8 @@
     - [Normal-Mapping](https://learnopengl.com/Advanced-Lighting/Normal-Mapping)
 - [Lesson30](src/lesson30_parallax_mapping)
     - [Parallax-Mapping](https://learnopengl.com/Advanced-Lighting/Parallax-Mapping)
+- [Lesson31](src/lesson31_hdr)
+    - [HDR](https://learnopengl.com/Advanced-Lighting/HDR)
         
 ## Docker linux build setup
 

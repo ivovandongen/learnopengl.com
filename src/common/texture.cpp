@@ -80,15 +80,15 @@ Texture::Texture(const std::array<const Image, 6> &images, bool generateMipmap, 
     }
 }
 
-Texture::Texture(unsigned int width, unsigned int height, unsigned int samples)
+Texture::Texture(unsigned int width, unsigned int height, unsigned int samples, bool floatingPoint)
         : _target(samples > 1 ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D) {
     glGenTextures(1, &*_id);
     glBindTexture(_target, *_id);
 
     if (samples > 1) {
-        glTexImage2DMultisample(_target, samples, GL_RGB, width, height, GL_TRUE);
+        glTexImage2DMultisample(_target, samples, floatingPoint ? GL_RGB16F : GL_RGB, width, height, GL_TRUE);
     } else {
-        glTexImage2D(_target, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+        glTexImage2D(_target, 0, floatingPoint ? GL_RGB16F : GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
         glTexParameteri(_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }

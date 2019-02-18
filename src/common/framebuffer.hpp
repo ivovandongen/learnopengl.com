@@ -18,7 +18,7 @@ public:
 
     static Framebuffer createDepthBufferOnly(unsigned int width, unsigned int height, bool cubeMap = false);
 
-    Framebuffer(unsigned int width, unsigned int height, unsigned int samples = 1);
+    Framebuffer(unsigned int width, unsigned int height, unsigned int samples = 1, bool floatingPoint = false);
 
     Framebuffer(Framebuffer&&) = default;
     Framebuffer& operator=(Framebuffer&&) = default;

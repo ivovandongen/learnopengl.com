@@ -47,13 +47,13 @@ Framebuffer::Framebuffer() {
     bind();
 }
 
-Framebuffer::Framebuffer(unsigned int width, unsigned int height, unsigned int samples) {
+Framebuffer::Framebuffer(unsigned int width, unsigned int height, unsigned int samples, bool floatingPoint) {
     glGenFramebuffers(1, &*_id);
 
     bind();
 
     // Add a texture for the color attachment
-    _texture.emplace(width, height, samples);
+    _texture.emplace(width, height, samples, floatingPoint);
 
     glFramebufferTexture2D(GL_FRAMEBUFFER,
                            GL_COLOR_ATTACHMENT0,
