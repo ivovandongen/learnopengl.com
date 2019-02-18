@@ -28,7 +28,7 @@ void main() {
     vec3 B = normalize(mat3(model) * aBitangent);
     vec3 N = normalize(mat3(model) * aNormal);
     mat3 TBN = transpose(mat3(T, B, N));
-    
+
     vs_out.tangentLightPos = TBN * lightPos;
     vs_out.tangentViewPos  = TBN * viewPos;
     vs_out.tangentFragPos  = TBN * vs_out.fragPos;

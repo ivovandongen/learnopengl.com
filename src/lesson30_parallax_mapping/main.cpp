@@ -179,11 +179,10 @@ int main() {
     );
     program.bind();
 
-    Texture wallTexture{Image{"resources/bricks2.jpg"}};
-    Texture wallNormalTexture{Image{"resources/bricks2_normal.jpg"}};
-    Texture wallDispTexture{Image{"resources/bricks2_disp.jpg"}};
+    Texture woodTexture{Image{"resources/wood.png", false}};
+    Texture toyboxNormalTexture{Image{"resources/toy_box_normal.png", false}};
+    Texture toyboxDispTexture{Image{"resources/toy_box_disp.png", false}};
 
-    program.bind();
     program.setUniform("diffuseMap", 0);
     program.setUniform("normalMap", 1);
     program.setUniform("dispMap", 2);
@@ -227,11 +226,11 @@ int main() {
         program.setUniform("heightScale", heightScale);
 
         glActiveTexture(GL_TEXTURE0);
-        wallTexture.bind();
+        woodTexture.bind();
         glActiveTexture(GL_TEXTURE1);
-        wallNormalTexture.bind();
+        toyboxNormalTexture.bind();
         glActiveTexture(GL_TEXTURE2);
-        wallDispTexture.bind();
+        toyboxDispTexture.bind();
 
         renderQuad();
 
@@ -284,7 +283,7 @@ void renderQuad() {
         glm::vec2 deltaUV1 = uv2 - uv1;
         glm::vec2 deltaUV2 = uv3 - uv1;
 
-        GLfloat f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+        float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
 
         tangent1.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
         tangent1.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
