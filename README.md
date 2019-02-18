@@ -77,6 +77,8 @@
     - [Point-Shadows](https://learnopengl.com/Advanced-Lighting/Shadows/Point-Shadows)
 - [Lesson29](src/lesson29_normal_mapping)
     - [Normal-Mapping](https://learnopengl.com/Advanced-Lighting/Normal-Mapping)
+- [Lesson30](src/lesson30_parallax_mapping)
+    - [Parallax-Mapping](https://learnopengl.com/Advanced-Lighting/Parallax-Mapping)
         
 ## Docker linux build setup
 
