@@ -1,5 +1,7 @@
 include_guard_x()
 
+git_include("rapidjson")
+
 set(ASSIMP_DIR ${CMAKE_SOURCE_DIR}/deps/assimp)
 
 set(ASSIMP_VERSION_MAJOR 4)
@@ -247,6 +249,25 @@ ADD_ASSIMP_IMPORTER(OBJ
         ${ASSIMP_DIR}/code/ObjExporter.cpp
         )
 
+ADD_ASSIMP_IMPORTER(GLTF
+        ${ASSIMP_DIR}/code/glTFAsset.h
+        ${ASSIMP_DIR}/code/glTFAsset.inl
+        ${ASSIMP_DIR}/code/glTFAssetWriter.h
+        ${ASSIMP_DIR}/code/glTFAssetWriter.inl
+        ${ASSIMP_DIR}/code/glTFImporter.cpp
+        ${ASSIMP_DIR}/code/glTFImporter.h
+        ${ASSIMP_DIR}/code/glTFExporter.h
+        ${ASSIMP_DIR}/code/glTFExporter.cpp
+        ${ASSIMP_DIR}/code/glTF2Asset.h
+        ${ASSIMP_DIR}/code/glTF2Asset.inl
+        ${ASSIMP_DIR}/code/glTF2AssetWriter.h
+        ${ASSIMP_DIR}/code/glTF2AssetWriter.inl
+        ${ASSIMP_DIR}/code/glTF2Importer.cpp
+        ${ASSIMP_DIR}/code/glTF2Importer.h
+        ${ASSIMP_DIR}/code/glTF2Exporter.h
+        ${ASSIMP_DIR}/code/glTF2Exporter.cpp
+        )
+
 set(IRRXML_DIR ${ASSIMP_DIR}/contrib/irrXML)
 
 add_library(IrrXML STATIC
@@ -336,7 +357,7 @@ target_compile_definitions(assimp PRIVATE
         ASSIMP_BUILD_NO_XGL_IMPORTER
         ASSIMP_BUILD_NO_FBX_IMPORTER
         ASSIMP_BUILD_NO_ASSBIN_IMPORTER
-        ASSIMP_BUILD_NO_GLTF_IMPORTER
+#        ASSIMP_BUILD_NO_GLTF_IMPORTER
         ASSIMP_BUILD_NO_C4D_IMPORTER
         ASSIMP_BUILD_NO_3MF_IMPORTER
         ASSIMP_BUILD_NO_X3D_IMPORTER
@@ -358,4 +379,4 @@ target_include_directories(assimp
         SYSTEM INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/include
         )
 
-target_link_libraries(assimp PUBLIC IrrXML)
+target_link_libraries(assimp PUBLIC rapidjson IrrXML)
